@@ -15,7 +15,7 @@ pc = Pinecone(api_key=api_key)
 print("Connected to Pinecone!")
 
 # ---------------- CREATE INDEX ----------------
-index_name = "demo-index"
+index_name = "demo-index2"
 
 pc.create_index(
     name=index_name,
