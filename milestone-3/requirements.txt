@@ -1,0 +1,10 @@
+flask
+werkzeug
+python-dotenv
+pinecone-client
+langchain
+langchain-community
+sentence-transformers
+pypdf
+docx2txt
+beautifulsoup4
