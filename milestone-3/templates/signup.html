@@ -1,17 +1,255 @@
-<form method="POST">
-    <input name="first_name" placeholder="First Name" required><br><br>
-    <input name="last_name" placeholder="Last Name" required><br><br>
-    <input type="email" name="email" placeholder="Email" required><br><br>
-    <input type="password" name="password" placeholder="Password" required><br>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - AI Smart File Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    <p>Password must contain:</p>
-    <ul>
-        <li>8 characters</li>
-        <li>Uppercase letter</li>
-        <li>Lowercase letter</li>
-        <li>Number</li>
-        <li>Special character</li>
-    </ul>
+        .auth-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
 
-    <button type="submit">Sign Up</button>
-</form>
+        h2 {
+            color: #1e3c72;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2a5298;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .password-rules {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .password-rules ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .password-rules li {
+            margin-bottom: 5px;
+        }
+
+        .valid {
+            color: green;
+        }
+
+        .invalid {
+            color: red;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: #2a5298;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            background: #1e3c72;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .auth-footer a {
+            color: #2a5298;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .flash.error {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .flash.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        <p class="subtitle">Join AI Smart File Assistant</p>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <form method="POST" action="{{ url_for('signup') }}">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>First Name *</label>
+                    <input type="text" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" name="last_name" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Email *</label>
+                <input type="email" name="email" required>
+            </div>
+
+            <div class="form-group">
+                <label>Password *</label>
+                <input type="password" name="password" id="password" required>
+                <div class="password-rules">
+                    <strong>Password must contain:</strong>
+                    <ul>
+                        <li id="rule-length">At least 8 characters</li>
+                        <li id="rule-uppercase">One uppercase letter</li>
+                        <li id="rule-lowercase">One lowercase letter</li>
+                        <li id="rule-digit">One digit</li>
+                        <li id="rule-special">One special character</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Confirm Password *</label>
+                <input type="password" name="confirm_password" id="confirm_password" required>
+                <div id="password-match" style="margin-top: 5px;"></div>
+            </div>
+
+            <button type="submit" class="btn-submit">Create Account</button>
+
+            <div class="auth-footer">
+                <p>Already have an account? <a href="{{ url_for('signin') }}">Sign In</a></p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirm_password');
+
+        function validatePassword() {
+            const value = password.value;
+
+            // Update rule indicators
+            document.getElementById('rule-length').className =
+                value.length >= 8 ? 'valid' : 'invalid';
+
+            document.getElementById('rule-uppercase').className =
+                /[A-Z]/.test(value) ? 'valid' : 'invalid';
+
+            document.getElementById('rule-lowercase').className =
+                /[a-z]/.test(value) ? 'valid' : 'invalid';
+
+            document.getElementById('rule-digit').className =
+                /\d/.test(value) ? 'valid' : 'invalid';
+
+            document.getElementById('rule-special').className =
+                /[!@#$%^&*(),.?":{}|<>]/.test(value) ? 'valid' : 'invalid';
+        }
+
+        function checkPasswordMatch() {
+            const matchDiv = document.getElementById('password-match');
+            if (password.value && confirmPassword.value) {
+                if (password.value === confirmPassword.value) {
+                    matchDiv.innerHTML = '✓ Passwords match';
+                    matchDiv.style.color = 'green';
+                } else {
+                    matchDiv.innerHTML = '✗ Passwords do not match';
+                    matchDiv.style.color = 'red';
+                }
+            } else {
+                matchDiv.innerHTML = '';
+            }
+        }
+
+        password.addEventListener('input', validatePassword);
+        password.addEventListener('input', checkPasswordMatch);
+        confirmPassword.addEventListener('input', checkPasswordMatch);
+    </script>
+</body>
+</html>

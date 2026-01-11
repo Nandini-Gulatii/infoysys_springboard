@@ -1,20 +1,506 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Smart File Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+        }
+
+        .navbar {
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2a5298;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .profile {
+            width: 40px;
+            height: 40px;
+            background: #2a5298;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            background: white;
+            padding: 20px;
+            border-right: 1px solid #e1e5eb;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+        .menu li {
+            padding: 12px 15px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu li:hover, .menu li.active {
+            background: #eef2ff;
+            color: #2a5298;
+        }
+
+        .main-content {
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .upload-area {
+            border: 3px dashed #2a5298;
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            background: #f8faff;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .upload-icon {
+            font-size: 50px;
+            color: #2a5298;
+            margin-bottom: 20px;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background: #2a5298;
+            color: white;
+            margin-left: auto;
+        }
+
+        .ai-message {
+            background: white;
+            border: 1px solid #e1e5eb;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .chat-input button {
+            background: #2a5298;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .files-list {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .file-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .flash.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
 </head>
-<body style="background:black;color:white">
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">AI Smart File Assistant</div>
+        <div class="user-info">
+            <div class="profile">
+                {{ user.first_name[0] }}{{ user.last_name[0] }}
+            </div>
+            <span>{{ user.get_full_name() }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </div>
+    </div>
 
-<a href="/logout" style="float:right;color:white;font-size:22px">⎋</a>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <ul class="menu">
+                <li class="active" onclick="switchTab('upload')">
+                    <i class="fas fa-upload"></i> Upload Files
+                </li>
+                <li onclick="switchTab('chat')">
+                    <i class="fas fa-robot"></i> AI Chatbot
+                </li>
+                <li onclick="switchTab('files')">
+                    <i class="fas fa-folder"></i> My Files
+                </li>
+                <li onclick="switchTab('stats')">
+                    <i class="fas fa-chart-bar"></i> Statistics
+                </li>
+            </ul>
+        </div>
 
-<h2>Upload Files for AI</h2>
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="flash-messages">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="flash {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+            </div>
 
-<form method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <br><br>
-    <button type="submit">Upload & Process</button>
-</form>
+            <!-- Upload Tab -->
+            <div id="uploadTab" class="tab-content active">
+                <h2>Upload Documents</h2>
+                <p>Upload PDF, DOCX, HTML, or TXT files (Max 16MB)</p>
 
+                <div class="upload-area" id="dropArea" onclick="document.getElementById('fileInput').click()">
+                    <div class="upload-icon">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                    </div>
+                    <h3>Click to upload files</h3>
+                    <p>Supported formats: .pdf, .docx, .html, .txt</p>
+                    <input type="file" id="fileInput" multiple style="display: none;" onchange="handleFiles(this.files)">
+                </div>
+
+                <div id="uploadProgress"></div>
+            </div>
+
+            <!-- Chat Tab -->
+            <div id="chatTab" class="tab-content">
+                <div class="chat-container">
+                    <h2>AI Chatbot</h2>
+                    <p>Ask questions about your uploaded documents</p>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message ai-message">
+                            <strong>AI Assistant:</strong><br>
+                            Hello! I'm your AI assistant. Upload some documents and ask me questions about them!
+                        </div>
+                    </div>
+
+                    <div class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Ask a question..." onkeypress="if(event.key=='Enter') sendMessage()">
+                        <button onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Files Tab -->
+            <div id="filesTab" class="tab-content">
+                <h2>My Uploaded Files</h2>
+                <div id="filesList" class="files-list">
+                    <p>Loading files...</p>
+                </div>
+            </div>
+
+            <!-- Stats Tab -->
+            <div id="statsTab" class="tab-content">
+                <h2>Statistics</h2>
+                <div id="statsContent">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>User Info</h3>
+                            <p><strong>Name:</strong> {{ user.get_full_name() }}</p>
+                            <p><strong>Email:</strong> {{ user.email }}</p>
+                            <p><strong>Index:</strong> {{ user.pinecone_index }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Update menu
+            document.querySelectorAll('.menu li').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Load data if needed
+            if (tabName === 'files') {
+                loadFiles();
+            } else if (tabName === 'chat') {
+                document.getElementById('chatInput').disabled = false;
+            }
+        }
+
+        // File upload
+        async function handleFiles(files) {
+            const progressDiv = document.getElementById('uploadProgress');
+            progressDiv.innerHTML = '';
+
+            for (let file of files) {
+                if (file.size > 16 * 1024 * 1024) {
+                    alert(`${file.name} is too large (max 16MB)`);
+                    continue;
+                }
+
+                const formData = new FormData();
+                formData.append('file', file);
+
+                try {
+                    const response = await fetch('/api/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        progressDiv.innerHTML += `
+                            <div style="color: green; margin: 10px 0;">
+                                ✓ ${result.file.name} uploaded successfully
+                            </div>
+                        `;
+                        document.getElementById('chatInput').disabled = false;
+                    } else {
+                        progressDiv.innerHTML += `
+                            <div style="color: red; margin: 10px 0;">
+                                ✗ ${file.name}: ${result.error}
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    progressDiv.innerHTML += `
+                        <div style="color: red; margin: 10px 0;">
+                            ✗ ${file.name}: Upload failed
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Load files
+        async function loadFiles() {
+            const filesList = document.getElementById('filesList');
+
+            try {
+                const response = await fetch('/api/files');
+                const result = await response.json();
+
+                if (result.files.length === 0) {
+                    filesList.innerHTML = '<p>No files uploaded yet.</p>';
+                    return;
+                }
+
+                let html = '';
+                result.files.forEach(file => {
+                    html += `
+                        <div class="file-item">
+                            <div>
+                                <strong>${file.name}</strong><br>
+                                <small>${file.type.toUpperCase()} • ${file.size} • ${file.uploaded}</small>
+                            </div>
+                            <div>
+                                <span style="color: ${file.processed ? 'green' : 'orange'};">
+                                    ${file.processed ? '✓ Processed' : 'Processing...'}
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                filesList.innerHTML = html;
+            } catch (error) {
+                filesList.innerHTML = '<p style="color: red;">Error loading files</p>';
+            }
+        }
+
+        // Chat functionality
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Add user message
+            addMessage(message, 'user');
+            input.value = '';
+
+            // Show typing indicator
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai-message';
+            typingDiv.innerHTML = '<strong>AI Assistant:</strong><br><i>Typing...</i>';
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ question: message })
+                });
+
+                const result = await response.json();
+
+                // Remove typing indicator
+                chatMessages.removeChild(typingDiv);
+
+                if (result.success) {
+                    addMessage(result.answer, 'ai', result.sources);
+                } else {
+                    addMessage(result.answer || 'Error occurred', 'ai');
+                }
+            } catch (error) {
+                chatMessages.removeChild(typingDiv);
+                addMessage('Network error. Please try again.', 'ai');
+            }
+        }
+
+        function addMessage(text, sender, sources = []) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}-message`;
+
+            let content = `<strong>${sender === 'user' ? 'You' : 'AI Assistant'}:</strong><br>${text}`;
+
+            if (sources && sources.length > 0) {
+                content += `<br><small><strong>Sources:</strong> ${sources.length} found</small>`;
+            }
+
+            messageDiv.innerHTML = content;
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Initialize
+        document.getElementById('chatInput').disabled = true;
+    </script>
 </body>
 </html>

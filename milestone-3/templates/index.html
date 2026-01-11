@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart File Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: white;
+            color: #2a5298;
+        }
+
+        .btn-primary:hover {
+            background: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: #2a5298;
+            transform: translateY(-2px);
+        }
+
+        .features {
+            background: white;
+            color: #333;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 50px auto 0;
+        }
+
+        .feature {
+            padding: 30px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .feature i {
+            font-size: 2.5rem;
+            color: #2a5298;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>AI-Based Smart File Assistant</h1>
+        <p>Upload your documents and chat with them using AI. Get intelligent answers from your PDFs, DOCX, HTML, and TXT files instantly.</p>
+
+        <div class="buttons">
+            <a href="{{ url_for('signin') }}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt"></i> Sign In
+            </a>
+            <a href="{{ url_for('signup') }}" class="btn btn-secondary">
+                <i class="fas fa-user-plus"></i> Sign Up
+            </a>
+        </div>
+    </div>
+
+    <div class="features">
+        <h2 style="color: #1e3c72;">Key Features</h2>
+        <div class="feature-grid">
+            <div class="feature">
+                <i class="fas fa-file-upload"></i>
+                <h3>Document Upload</h3>
+                <p>Upload and process multiple file formats including PDF, DOCX, HTML, and TXT.</p>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-robot"></i>
+                <h3>AI Chatbot</h3>
+                <p>Ask questions about your documents and get instant AI-powered answers.</p>
+            </div>
+
+            <div class="feature">
+                <i class="fas fa-database"></i>
+                <h3>Vector Storage</h3>
+                <p>Your documents are securely stored in Pinecone vector database.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
